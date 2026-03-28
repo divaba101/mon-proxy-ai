@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Proxy Optimizer | Réduisez vos coûts LLM de 40%</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans text-gray-900">
+
+    <header class="gradient-bg text-white py-16 px-4 text-center">
+        <h1 class="text-4xl font-bold mb-4">Arrêtez de gaspiller vos crédits d'IA</h1>
+        <p class="text-xl opacity-90">Routez intelligemment vos requêtes vers le bon modèle au meilleur prix.</p>
+    </header>
+
+    <main class="max-w-4xl mx-auto -mt-12 p-8 bg-white rounded-xl shadow-2xl">
+        <h2 class="text-2xl font-semibold mb-6 text-center text-indigo-700">Calculateur d'Économies Passives</h2>
+        
+        <div class="grid md:grid-cols-2 gap-8">
+            <div class="space-y-6">
+                <div>
+                    <label class="block text-sm font-medium mb-1">Nombre de requêtes mensuelles</label>
+                    <input type="number" id="reqCount" value="50000" class="w-full border p-2 rounded bg-gray-50 focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1">% de tâches simples (traduction, résumé, chat basique)</label>
+                    <input type="range" id="simpleRatio" min="0" max="100" value="70" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-indigo-600">
+                    <span id="ratioDisplay" class="text-sm text-indigo-600 font-bold">70%</span>
+                </div>
+            </div>
+
+            <div class="bg-indigo-50 p-6 rounded-lg border-2 border-indigo-100 flex flex-col justify-center items-center text-center">
+                <p class="text-sm uppercase tracking-wider text-indigo-500 font-bold mb-2">Économie Mensuelle Estimée</p>
+                <div id="savingsDisplay" class="text-5xl font-black text-indigo-700">0 €</div>
+                <p class="mt-4 text-xs text-gray-500 italic">*Basé sur les tarifs moyens GPT-4o vs Gemini Flash (2026)</p>
+            </div>
+        </div>
+
+        <div class="mt-12 text-center">
+            <a href="VOTRE_URL_WORKER_OU_RAPIDAPI" class="gradient-bg text-white px-8 py-4 rounded-full font-bold text-lg hover:opacity-90 transition transform hover:scale-105 inline-block shadow-lg">
+                Connectez votre API Key & Économisez Maintenant
+            </a>
+            <p class="mt-4 text-sm text-gray-400">Stateless. Chiffré. 100% sécurisé.</p>
+        </div>
+    </main>
+
+    <footer class="text-center py-12 text-gray-400 text-sm">
+        Propulsé par l'IA Simpson Engine • Pas de cookies, juste du code propre.
+    </footer>
+
+    <script>
+        const reqCountInput = document.getElementById('reqCount');
+        const simpleRatioInput = document.getElementById('simpleRatio');
+        const ratioDisplay = document.getElementById('ratioDisplay');
+        const savingsDisplay = document.getElementById('savingsDisplay');
+
+        // Tarifs 2026 (Estimations moyennes pour 1k tokens combinés IN/OUT)
+        const PRICE_PREMIUM = 0.015; // GPT-4o style
+        const PRICE_CHEAP = 0.0003;  // Flash/Small style
+        const PROXY_SUBSCRIPTION = 15; // Votre tarif fixe
+
+        function updateROI() {
+            const count = parseInt(reqCountInput.value) || 0;
+            const ratioSimple = simpleRatioInput.value / 100;
+            const ratioComplex = 1 - ratioSimple;
+            
+            ratioDisplay.innerText = `${Math.round(ratioSimple * 100)}%`;
+
+            // Calcul coût SANS le proxy (Tout en Premium)
+            const costWithout = (count / 1000) * PRICE_PREMIUM;
+
+            // Calcul coût AVEC le proxy (Mixte + Abonnement)
+            const costWith = ((count * ratioComplex / 1000) * PRICE_PREMIUM) + 
+                             ((count * ratioSimple / 1000) * PRICE_CHEAP) + 
+                             PROXY_SUBSCRIPTION;
+
+            const savings = costWithout - costWith;
+            savingsDisplay.innerText = savings > 0 ? `${Math.round(savings)} €` : `0 €`;
+        }
+
+        [reqCountInput, simpleRatioInput].forEach(el => el.addEventListener('input', updateROI));
+        updateROI();
+    </script>
+</body>
+</html>
