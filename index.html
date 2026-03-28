@@ -23,44 +23,41 @@
             <div class="space-y-6">
                 <div>
                     <label class="block text-sm font-medium mb-1">Nombre de requêtes mensuelles</label>
-                    <input type="number" id="reqCount" value="50000" class="w-full border p-2 rounded bg-gray-50 focus:ring-2 focus:ring-indigo-500">
+                    <input type="number" id="reqCount" value="1000000" class="w-full border p-2 rounded bg-gray-50 focus:ring-2 focus:ring-indigo-500">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium mb-1">% de tâches simples (traduction, résumé, chat basique)</label>
+                    <label class="block text-sm font-medium mb-1">% de tâches simples (traduction, résumé...)</label>
                     <input type="range" id="simpleRatio" min="0" max="100" value="70" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-indigo-600">
                     <span id="ratioDisplay" class="text-sm text-indigo-600 font-bold">70%</span>
                 </div>
             </div>
 
             <div class="bg-indigo-50 p-6 rounded-lg border-2 border-indigo-100 flex flex-col justify-center items-center text-center">
-                <p class="text-sm uppercase tracking-wider text-indigo-500 font-bold mb-2">Économie Mensuelle Estimée</p>
+                <p class="text-sm uppercase tracking-wider text-indigo-500 font-bold mb-2">Résultat Mensuel</p>
                 <div id="savingsDisplay" class="text-5xl font-black text-indigo-700">0 €</div>
-                <p class="mt-4 text-xs text-gray-500 italic">*Basé sur les tarifs moyens GPT-4o vs Gemini Flash (2026)</p>
+                <p id="statusMessage" class="mt-4 text-xs text-gray-500 italic">*Basé sur les tarifs GPT-4o vs Flash (2026)</p>
             </div>
         </div>
 
         <div class="mt-12 text-center">
-            <a href="VOTRE_URL_WORKER_OU_RAPIDAPI" class="gradient-bg text-white px-8 py-4 rounded-full font-bold text-lg hover:opacity-90 transition transform hover:scale-105 inline-block shadow-lg">
+            <a href="#" class="gradient-bg text-white px-8 py-4 rounded-full font-bold text-lg hover:opacity-90 transition transform hover:scale-105 inline-block shadow-lg">
                 Connectez votre API Key & Économisez Maintenant
             </a>
             <p class="mt-4 text-sm text-gray-400">Stateless. Chiffré. 100% sécurisé.</p>
         </div>
     </main>
 
-    <footer class="text-center py-12 text-gray-400 text-sm">
-        Propulsé par l'IA Simpson Engine • Pas de cookies, juste du code propre.
-    </footer>
-
     <script>
         const reqCountInput = document.getElementById('reqCount');
         const simpleRatioInput = document.getElementById('simpleRatio');
         const ratioDisplay = document.getElementById('ratioDisplay');
         const savingsDisplay = document.getElementById('savingsDisplay');
+        const statusMessage = document.getElementById('statusMessage');
 
-        // Tarifs 2026 (Estimations moyennes pour 1k tokens combinés IN/OUT)
-        const PRICE_PREMIUM = 0.015; // GPT-4o style
-        const PRICE_CHEAP = 0.0003;  // Flash/Small style
-        const PROXY_SUBSCRIPTION = 15; // Votre tarif fixe
+        // Tarifs 2026 Réalistes (Input + Output moyen pour 1k tokens)
+        const PRICE_PREMIUM = 0.03;  // Mixte GPT-4o
+        const PRICE_CHEAP = 0.0005;  // Mixte Gemini Flash
+        const PROXY_SUBSCRIPTION = 9.90; // Votre tarif fixe
 
         function updateROI() {
             const count = parseInt(reqCountInput.value) || 0;
@@ -69,16 +66,27 @@
             
             ratioDisplay.innerText = `${Math.round(ratioSimple * 100)}%`;
 
-            // Calcul coût SANS le proxy (Tout en Premium)
+            // Coût SANS proxy
             const costWithout = (count / 1000) * PRICE_PREMIUM;
 
-            // Calcul coût AVEC le proxy (Mixte + Abonnement)
+            // Coût AVEC proxy
             const costWith = ((count * ratioComplex / 1000) * PRICE_PREMIUM) + 
                              ((count * ratioSimple / 1000) * PRICE_CHEAP) + 
                              PROXY_SUBSCRIPTION;
 
-            const savings = costWithout - costWith;
-            savingsDisplay.innerText = savings > 0 ? `${Math.round(savings)} €` : `0 €`;
+            const savings = Math.round(costWithout - costWith);
+
+            if (savings > 0) {
+                savingsDisplay.innerText = `${savings} €`;
+                savingsDisplay.classList.remove('text-gray-400');
+                savingsDisplay.classList.add('text-indigo-700');
+                statusMessage.innerText = "Économie nette après abonnement";
+            } else {
+                savingsDisplay.innerText = `0 €`;
+                savingsDisplay.classList.remove('text-indigo-700');
+                savingsDisplay.classList.add('text-gray-400');
+                statusMessage.innerText = "Volume trop faible pour justifier l'abonnement";
+            }
         }
 
         [reqCountInput, simpleRatioInput].forEach(el => el.addEventListener('input', updateROI));
